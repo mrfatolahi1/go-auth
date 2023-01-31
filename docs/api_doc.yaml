@@ -1,0 +1,112 @@
+openapi: 3.0.2
+info:
+  title: go-auth
+#  description:
+  version: "v1"
+servers:
+  - url: "http://127.0.0.1:8080/"
+
+paths:
+
+  /SignUp/:
+    post:
+      tags:
+        - user
+      summary: create a user
+      requestBody:
+        required: true
+        content:
+          multipart/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        "200":
+          description: user created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: bad data
+
+  /SignIn/:
+    post:
+      tags:
+        - user
+      summary: sign user in
+      requestBody:
+        required: true
+        content:
+          multipart/json:
+            schema:
+              $ref: "#/components/schemas/UserSignIn"
+      responses:
+        "200":
+          description: user signed in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        "400":
+          description: bad data
+
+  /SignOut/:
+    post:
+      tags:
+        - user
+      summary: sign user out
+      responses:
+        "200":
+          description: done
+
+  /UserInfo/:
+    post:
+      tags:
+        - user
+      summary: get some user's info
+      requestBody:
+        required: true
+        content:
+          multipart/json:
+            schema:
+              $ref: "#/components/schemas/Token"
+      responses:
+        "200":
+          description: user's info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: wrong token
+
+components:
+
+  schemas:
+
+    User:
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        phone_number:
+          type: string
+        gender:
+          type: string
+
+    UserSignIn:
+      properties:
+        email:
+          type: string
+        phone_number:
+          type: string
+        password:
+          type: string
+
+    Token:
+      properties:
+        token:
+          type: string
