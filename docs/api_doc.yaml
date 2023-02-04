@@ -1,7 +1,7 @@
 openapi: 3.0.2
 info:
   title: go-auth
-#  description:
+  #  description:
   version: "v1"
 servers:
   - url: "http://127.0.0.1:8080/"
@@ -25,12 +25,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/Token"
         "400":
           description: bad data
 
   /SignIn/:
-    post:
+    get:
       tags:
         - user
       summary: sign user in
@@ -55,12 +55,18 @@ paths:
       tags:
         - user
       summary: sign user out
+      requestBody:
+        required: true
+        content:
+          multipart/json:
+            schema:
+              $ref: "#/components/schemas/Token"
       responses:
         "200":
           description: done
 
   /UserInfo/:
-    post:
+    get:
       tags:
         - user
       summary: get some user's info
