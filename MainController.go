@@ -37,6 +37,7 @@ func manage() {
 func initDB() {
 	ConnectToDatabase()
 	MigrateDatabase()
+	initRedis()
 }
 
 func signUp(context *gin.Context) {
@@ -137,9 +138,16 @@ func userInfo(context *gin.Context) {
 	}
 	var token = dataMap["token"]
 
-	var tokenObject = loadTokenObject(token)
+	if checkKeyExistanceInRedis(token) {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": "token expired",
+		})
+		return
+	}
 
-	if &tokenObject != nil {
+	var tokenObject = loadTokenObjectFromDB(token)
+
+	if &tokenObject != nil && tokenObject.UserId != 0 {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"error": "token expired",
 		})
@@ -181,9 +189,16 @@ func signOut(context *gin.Context) {
 	}
 	var token = dataMap["token"]
 
-	var tokenObject = loadTokenObject(token)
+	if checkKeyExistanceInRedis(token) {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"error": "token expired",
+		})
+		return
+	}
 
-	if &tokenObject != nil {
+	var tokenObject = loadTokenObjectFromDB(token)
+
+	if &tokenObject != nil && tokenObject.UserId != 0 {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"error": "token expired",
 		})

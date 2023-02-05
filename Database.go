@@ -82,15 +82,21 @@ func saveExpiredToken(token string, userId uint) {
 		ExpirationTime: getTokenExpiration(token),
 	}
 
-	err := database.Create(&dbToken)
-	println(err.Error)
+	database.Create(&dbToken)
 }
 
-func loadTokenObject(token string) (tokenObj DBToken) {
-	err := database.Where("token=?", token).Find(&tokenObj).Error
+func loadTokenObjectFromDB(token string) (tokenObj DBToken) {
+
+	err := database.Where("token=?", token).Find(&tokenObj)
 	if err != nil {
-		println(err.Error())
+		if tokenObj.UserId != 0 {
+			saveToRedis(tokenObj.Token, tokenObj.Token)
+
+		}
 		return
+	}
+	if !checkKeyExistanceInRedis(token) {
+		saveToRedis(tokenObj.Token, tokenObj.Token)
 	}
 	return tokenObj
 }
