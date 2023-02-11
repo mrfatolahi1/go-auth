@@ -127,18 +127,16 @@ func signIn(context *gin.Context) {
 }
 
 func userInfo(context *gin.Context) {
-	jsonData, _ := ioutil.ReadAll(context.Request.Body)
-	dataMap := make(map[string]string)
-	err := json.Unmarshal(jsonData, &dataMap)
-	if err != nil {
+	var token = context.Request.URL.Query().Get("token")
+	if token == "" {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid request!",
 		})
 		return
 	}
-	var token = dataMap["token"]
 
 	if checkKeyExistanceInRedis(token) {
+		// Check Redis
 		context.JSON(http.StatusBadRequest, gin.H{
 			"error": "token expired",
 		})
@@ -178,16 +176,13 @@ func userInfo(context *gin.Context) {
 }
 
 func signOut(context *gin.Context) {
-	jsonData, _ := ioutil.ReadAll(context.Request.Body)
-	dataMap := make(map[string]string)
-	err := json.Unmarshal(jsonData, &dataMap)
-	if err != nil {
+	var token = context.Request.URL.Query().Get("token")
+	if token == "" {
 		context.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid request!",
 		})
 		return
 	}
-	var token = dataMap["token"]
 
 	if checkKeyExistanceInRedis(token) {
 		context.JSON(http.StatusBadRequest, gin.H{
