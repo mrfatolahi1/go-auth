@@ -19,7 +19,7 @@ func manage() {
 		signUp(context)
 	})
 
-	router.GET("/SignIn", func(context *gin.Context) {
+	router.POST("/SignIn", func(context *gin.Context) {
 		signIn(context)
 	})
 
